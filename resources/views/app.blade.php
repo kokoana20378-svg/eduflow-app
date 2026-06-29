@@ -4,6 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
 
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="0">
         <title inertia>{{ config('app.name', 'EduFlow') }}</title>
 
         <!-- PWA: iOS Safari -->
@@ -48,23 +51,17 @@
 
         <script>
             if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js').then((reg) => {
-                        reg.addEventListener('updatefound', () => {
-                            const newWorker = reg.installing;
-                            if (newWorker) {
-                                newWorker.addEventListener('statechange', () => {
-                                    if (newWorker.state === 'activated') {
-                                        if (navigator.serviceWorker.controller) {
-                                            if (typeof window.showUpdateNotification === 'function') {
-                                                window.showUpdateNotification();
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    }).catch(() => {});
+                navigator.serviceWorker.getRegistrations().then((regs) => {
+                    const promises = regs.map((r) => r.unregister());
+                    return Promise.all(promises);
+                }).then(() => {
+                    if ('caches' in window) {
+                        return caches.keys().then((keys) =>
+                            Promise.all(keys.map((k) => caches.delete(k)))
+                        );
+                    }
+                }).then(() => {
+                    navigator.serviceWorker.register('/sw.js?v=' + Date.now()).catch(() => {});
                 });
             }
         </script>
