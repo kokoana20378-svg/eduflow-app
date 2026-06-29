@@ -18,3 +18,4 @@ Homestead.yaml
 .docker
 docker-compose.yml
 docker-compose.override.yml
+/package-lock.json
