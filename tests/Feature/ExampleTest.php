@@ -6,11 +6,11 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    public function test_the_application_redirects_to_login(): void
+    public function test_the_application_redirects_to_demo(): void
     {
         $response = $this->get('/');
         $response->assertStatus(302);
-        $response->assertRedirect('/login');
+        $response->assertRedirect('/demo');
     }
 
     public function test_health_endpoint(): void

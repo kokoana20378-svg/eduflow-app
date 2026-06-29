@@ -35,6 +35,11 @@
 
         <!-- Scripts -->
         @routes
+        <script>
+            if (window.Ziggy) {
+                window.Ziggy.url = '{{ config("app.url") }}';
+            }
+        </script>
         @viteReactRefresh
         @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
         @inertiaHead

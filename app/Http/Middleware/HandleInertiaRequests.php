@@ -34,6 +34,10 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'ziggy' => [
+                'url' => config('app.url'),
+                'position' => null,
+            ],
         ];
     }
 }

@@ -15,18 +15,39 @@ use App\Http\Controllers\ParentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AiController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return redirect()->route('demo');
 });
 
 Route::get('/health', function () {
     return response()->json(['status' => 'ok', 'time' => now()->toIso8601String()]);
-});
+})->name('health');
 
 Route::get('/offline', function () {
     return response()->view('offline')->header('Cache-Control', 'public, max-age=86400');
 })->name('offline');
+
+Route::get('/demo', function () {
+    $accounts = [
+        ['email' => 'admin@eduflow.local', 'name' => 'أحمد علي', 'role' => 'مدير النظام', 'role_en' => 'admin', 'icon' => '👨‍💼'],
+        ['email' => 'teacher1@eduflow.local', 'name' => 'محمد حسن', 'role' => 'مدرس رياضيات', 'role_en' => 'teacher', 'icon' => '👨‍🏫'],
+        ['email' => 'teacher2@eduflow.local', 'name' => 'سارة أحمد', 'role' => 'مدرسة علوم', 'role_en' => 'teacher', 'icon' => '👩‍🏫'],
+        ['email' => 'student1@eduflow.local', 'name' => 'أحمد محمد', 'role' => 'طالب', 'role_en' => 'student', 'icon' => '🎓'],
+        ['email' => 'student5@eduflow.local', 'name' => 'نورا سامي', 'role' => 'طالبة', 'role_en' => 'student', 'icon' => '🎓'],
+        ['email' => 'parent1@eduflow.local', 'name' => 'محمد أحمد', 'role' => 'ولي أمر', 'role_en' => 'parent', 'icon' => '👨‍👧'],
+    ];
+    return Inertia::render('Demo', ['accounts' => $accounts]);
+})->name('demo');
+
+Route::post('/demo/login', function (\Illuminate\Http\Request $request) {
+    $request->validate(['email' => 'required|email|exists:users,email']);
+    $user = \App\Models\User::where('email', $request->email)->first();
+    \Auth::login($user);
+    $request->session()->regenerate();
+    return redirect()->route('dashboard');
+})->name('demo.login');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
