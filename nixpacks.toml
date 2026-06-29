@@ -1,0 +1,12 @@
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["composer install --no-dev --optimize-autoloader --no-interaction", "npm ci"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[phases.collect]
+staticAssets = ["public/build"]
+ignoredFiles = ["node_modules", ".git", "tests", "resources/js"]

@@ -1,0 +1,17 @@
+import { Config } from "@railway/cli/types/config";
+
+const config: Config = {
+  $schema: "https://railway.app/railway.schema.json",
+  build: {
+    builder: "NIXPACKS",
+    buildCommand: "composer install --no-dev --optimize-autoloader && npm install && npm run build",
+  },
+  deploy: {
+    startCommand: "php artisan optimize && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT",
+    restartPolicyType: "ON_FAILURE",
+    healthcheckPath: "/health",
+    healthcheckTimeout: 300,
+  },
+};
+
+export default config;
