@@ -40,10 +40,10 @@ class ExamController extends Controller
             'level_id' => 'required|exists:levels,id',
             'group_id' => 'nullable|exists:groups,id',
             'subject_id' => 'required|exists:subjects,id',
-            'teacher_id' => 'nullable|exists:teachers,id',
+            'teacher_id' => 'required|exists:teachers,id',
             'type' => 'required|string|in:midterm,final,quiz,assignment',
             'total_marks' => 'required|numeric|min:0',
-            'date' => 'nullable|date',
+            'date' => 'required|date',
             'duration' => 'nullable|integer|min:1',
         ]);
 
@@ -75,10 +75,10 @@ class ExamController extends Controller
             'level_id' => 'required|exists:levels,id',
             'group_id' => 'nullable|exists:groups,id',
             'subject_id' => 'required|exists:subjects,id',
-            'teacher_id' => 'nullable|exists:teachers,id',
+            'teacher_id' => 'required|exists:teachers,id',
             'type' => 'required|string|in:midterm,final,quiz,assignment',
             'total_marks' => 'required|numeric|min:0',
-            'date' => 'nullable|date',
+            'date' => 'required|date',
             'duration' => 'nullable|integer|min:1',
         ]);
 

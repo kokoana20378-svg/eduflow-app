@@ -35,6 +35,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Levels (admin only)
     Route::resource('levels', LevelController::class)->except(['show'])->middleware('role:admin');
@@ -64,7 +65,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/exams/{exam}/results', [ExamResultController::class, 'index'])->name('exam-results.index');
     Route::get('/exams/{exam}/results/create', [ExamResultController::class, 'create'])->name('exam-results.create');
     Route::post('/exams/{exam}/results', [ExamResultController::class, 'store'])->name('exam-results.store');
-    Route::get('/exams/{exam}/results/export-pdf', [ExamResultController::class, 'exportPdf'])->name('exam-results.export-pdf');
+    Route::get('/exams/{exam}/results/export-pdf', [ExamResultController::class, 'exportPdf'])->name('exam-results.export-pdf')->middleware('role:admin,teacher');
     Route::get('/exam-results/{examResult}/edit', [ExamResultController::class, 'edit'])->name('exam-results.edit');
     Route::put('/exam-results/{examResult}', [ExamResultController::class, 'update'])->name('exam-results.update');
 
@@ -83,7 +84,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications/bulk/create', [NotificationController::class, 'bulkForm'])->name('notifications.bulk-form');
 
     // Parents (admin)
-    Route::resource('parents', ParentController::class)->middleware('role:admin');
+    Route::resource('parents', ParentController::class)->except(['show'])->middleware('role:admin');
 
     // AI routes
     Route::middleware('role:admin,teacher')->group(function () {

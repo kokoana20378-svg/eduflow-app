@@ -62,7 +62,7 @@ class DemoDataSeeder extends Seeder
 
         // ========== TEACHERS (3 teachers) ==========
         $teacherData = [
-            ['name' => 'محمد حسن - مدرس رياضيات', 'email' => 'teacher1@eduflow.local', 'phone' => '01111111111', 'specialization' => 'الرياضيات', 'qualification' => 'بكالوريوس تربية رياضية'],
+            ['name' => 'محمد حسن - مدرس رياضيات', 'email' => 'teacher1@eduflow.local', 'phone' => '01111111111', 'specialization' => 'الرياضيات', 'qualification' => 'بكالوريوس تربية رياضيات'],
             ['name' => 'سارة أحمد - مدرسة علوم', 'email' => 'teacher2@eduflow.local', 'phone' => '01111111112', 'specialization' => 'العلوم', 'qualification' => 'بكالوريوس علوم'],
             ['name' => 'خالد عمر - مدرس لغة عربية', 'email' => 'teacher3@eduflow.local', 'phone' => '01111111113', 'specialization' => 'اللغة العربية', 'qualification' => 'ليسانس آداب'],
         ];
@@ -240,7 +240,7 @@ class DemoDataSeeder extends Seeder
                     'fee_id' => $fee->id,
                     'amount' => $fee->amount,
                     'payment_date' => Carbon::now()->subDays(rand(1, 30))->format('Y-m-d'),
-                    'payment_method' => ['cash', 'bank_transfer', 'card', 'check'][array_rand(['cash', 'bank_transfer', 'card', 'check'])],
+                    'payment_method' => ['cash', 'bank_transfer', 'online', 'cheque'][array_rand(['cash', 'bank_transfer', 'online', 'cheque'])],
                     'receipt_number' => 'RCP-' . str_pad($i + 1, 5, '0', STR_PAD_LEFT),
                     'notes' => $i % 2 == 0 ? 'تم الدفع كاملاً' : 'دفعة أولى',
                 ]);

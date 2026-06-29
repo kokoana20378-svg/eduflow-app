@@ -8,7 +8,6 @@ use App\Models\Group;
 use App\Models\Level;
 use App\Models\Payment;
 use App\Models\Attendance;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -25,7 +24,7 @@ class DashboardController extends Controller
             'total_teachers' => Teacher::count(),
             'total_groups' => Group::count(),
             'total_levels' => Level::count(),
-            'pending_payments' => Payment::whereNull('payment_date')->orWhere('payment_date', '>', now()->subDays(30))->count(),
+            'pending_payments' => Payment::where('payment_date', '<', now()->subDays(30))->count(),
             'today_attendance' => [
                 'total' => $totalToday,
                 'present' => $presentToday,

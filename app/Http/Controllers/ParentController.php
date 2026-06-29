@@ -7,7 +7,6 @@ use App\Models\Student;
 use App\Models\ParentModel;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Str;
 
 class ParentController extends Controller
 {

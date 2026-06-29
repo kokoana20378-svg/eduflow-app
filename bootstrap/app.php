@@ -23,6 +23,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         ]);
+
+        if (env('APP_ENV') === 'testing') {
+            $middleware->validateCsrfTokens(except: [
+                '*',
+            ]);
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

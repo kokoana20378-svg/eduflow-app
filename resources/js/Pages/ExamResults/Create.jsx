@@ -17,7 +17,9 @@ export default function Create() {
         setNotes((prev) => ({ ...prev, [studentId]: value }));
     };
 
-    const { post, processing } = useForm();
+    const { setData, post, processing } = useForm({
+        results: [],
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -26,9 +28,8 @@ export default function Create() {
             marks_obtained: marks[s.id] ?? 0,
             notes: notes[s.id] || null,
         }));
-        post(route('exam-results.store', exam.id), {
-            results,
-        });
+        setData('results', results);
+        post(route('exam-results.store', exam.id));
     };
 
     const list = students || [];

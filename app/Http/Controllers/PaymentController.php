@@ -31,7 +31,7 @@ class PaymentController extends Controller
             'fee_id' => 'nullable|exists:fees,id',
             'amount' => 'required|numeric|min:0',
             'payment_date' => 'required|date',
-            'payment_method' => 'required|string|in:cash,bank_transfer,card,cheque',
+            'payment_method' => 'required|string|in:cash,bank_transfer,online,cheque',
             'receipt_number' => 'nullable|string|max:100|unique:payments,receipt_number',
             'notes' => 'nullable|string',
         ]);
@@ -63,7 +63,7 @@ class PaymentController extends Controller
             'fee_id' => 'nullable|exists:fees,id',
             'amount' => 'required|numeric|min:0',
             'payment_date' => 'required|date',
-            'payment_method' => 'required|string|in:cash,bank_transfer,card,cheque',
+            'payment_method' => 'required|string|in:cash,bank_transfer,online,cheque',
             'receipt_number' => 'nullable|string|max:100|unique:payments,receipt_number,' . $payment->id,
             'notes' => 'nullable|string',
         ]);

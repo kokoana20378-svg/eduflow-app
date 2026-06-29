@@ -77,7 +77,7 @@ class AttendanceController extends Controller
         return redirect()->back()->with('success', 'تم الحفظ بنجاح');
     }
 
-    public function showByGroup(Group $group, string $date)
+    public function showByGroup(Group $group, ?string $date = null)
     {
         $attendances = Attendance::where('group_id', $group->id)
             ->whereDate('date', $date)
@@ -118,7 +118,7 @@ class AttendanceController extends Controller
         $qrUrl = route('attendance.scan.form', ['token' => $token->token]);
         $qrSvg = QrCode::format('svg')->size(300)->generate($qrUrl);
 
-        return Inertia::render('Attendance/QRGenerate', [
+        return Inertia::render('Attendances/QRGenerate', [
             'qr_svg' => $qrSvg,
             'token' => $token->token,
             'group' => $group->load('level'),
@@ -162,7 +162,7 @@ class AttendanceController extends Controller
                 ->first();
 
             if (!$qrToken) {
-                return Inertia::render('Attendance/QRScan', [
+                return Inertia::render('Attendances/QRScan', [
                     'error' => 'رمز QR غير صالح',
                     'token' => null,
                 ]);
@@ -170,7 +170,7 @@ class AttendanceController extends Controller
 
             $expired = $qrToken->expires_at < now() || !$qrToken->is_active;
             if ($expired) {
-                return Inertia::render('Attendance/QRScan', [
+                return Inertia::render('Attendances/QRScan', [
                     'error' => 'رمز QR منتهي الصلاحية',
                     'token' => $token,
                     'group' => $qrToken->group->load('level'),
@@ -182,7 +182,7 @@ class AttendanceController extends Controller
                 return ['id' => $s->id, 'name' => $s->user?->name ?? $s->student_code];
             });
 
-            return Inertia::render('Attendance/QRScan', [
+            return Inertia::render('Attendances/QRScan', [
                 'token' => $token,
                 'group' => $qrToken->group->load('level'),
                 'students' => $students,
@@ -191,7 +191,7 @@ class AttendanceController extends Controller
             ]);
         }
 
-        return Inertia::render('Attendance/QRScan', [
+        return Inertia::render('Attendances/QRScan', [
             'token' => null,
             'error' => null,
         ]);

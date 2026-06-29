@@ -6,7 +6,6 @@ use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Str;
 
 class TeacherController extends Controller
 {
@@ -89,8 +88,8 @@ class TeacherController extends Controller
             return redirect()->back()->with('error', 'لا يمكن حذف المدرس لوجود بيانات مرتبطة به');
         }
 
-        $teacher->user->delete();
         $teacher->delete();
+        $teacher->user->delete();
 
         return redirect()->back()->with('success', 'تم الحذف');
     }

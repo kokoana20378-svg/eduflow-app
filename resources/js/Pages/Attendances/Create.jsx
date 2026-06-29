@@ -34,7 +34,9 @@ export default function Create() {
         setAttendanceData((prev) => ({ ...prev, [studentId]: status }));
     };
 
-    const { post, processing } = useForm();
+    const { setData, post, processing } = useForm({
+        records: [],
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -44,7 +46,8 @@ export default function Create() {
             date: selectedDate,
             status,
         }));
-        post(route('attendance.store'), { records });
+        setData('records', records);
+        post(route('attendance.store'));
     };
 
     const statusOptions = [
