@@ -2,19 +2,32 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import Table from '@/Components/Admin/Table';
 import DeleteButton from '@/Components/Admin/DeleteButton';
 import Pagination from '@/Components/Admin/Pagination';
+import SearchInput from '@/Components/Admin/SearchInput';
 import { Link, router, usePage } from '@inertiajs/react';
+import { useState, useMemo } from 'react';
 
 export default function Index() {
     const { parents } = usePage().props;
     const data = parents.data || parents;
     const pagination = parents.links ? parents : null;
+    const [search, setSearch] = useState('');
 
     const handleDelete = (id) => {
         router.delete(route('parents.destroy', id));
     };
 
+    const filteredData = useMemo(() => {
+        if (!search) return data || [];
+        const q = search.toLowerCase();
+        return (data || []).filter((p) =>
+            (p.name || '').toLowerCase().includes(q) ||
+            (p.email || '').toLowerCase().includes(q) ||
+            (p.phone || '').toLowerCase().includes(q)
+        );
+    }, [data, search]);
+
     const headers = ['الاسم', 'البريد', 'الهاتف', 'عدد الطلاب المرتبطين'];
-    const rows = (data || []).map((p) => ({
+    const rows = filteredData.map((p) => ({
         cells: [
             p.name,
             p.email || '-',
@@ -41,6 +54,10 @@ export default function Index() {
                 </Link>
             </div>
 
+            <div className="mb-4">
+                <SearchInput onSearch={setSearch} placeholder="بحث بالاسم، البريد، الهاتف..." />
+            </div>
+
             <div className="overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-800">
                 <Table
                     headers={headers}
@@ -48,7 +65,7 @@ export default function Index() {
                     actions={(row, index) => (
                         <div className="flex items-center gap-3">
                             <Link
-                                href={route('parents.edit', data[index].id)}
+                                href={route('parents.edit', filteredData[index].id)}
                                 className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
                                 title="تعديل"
                             >
@@ -56,7 +73,7 @@ export default function Index() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </Link>
-                            <DeleteButton onDelete={() => handleDelete(data[index].id)} itemName={data[index].name} />
+                            <DeleteButton onDelete={() => handleDelete(filteredData[index].id)} itemName={filteredData[index].name} />
                         </div>
                     )}
                 />

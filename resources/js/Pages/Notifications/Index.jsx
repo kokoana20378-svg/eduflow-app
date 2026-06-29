@@ -2,12 +2,15 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import Table from '@/Components/Admin/Table';
 import DeleteButton from '@/Components/Admin/DeleteButton';
 import Pagination from '@/Components/Admin/Pagination';
+import SearchInput from '@/Components/Admin/SearchInput';
 import { Link, router, usePage } from '@inertiajs/react';
+import { useState, useMemo } from 'react';
 
 export default function Index() {
     const { notifications } = usePage().props;
     const data = notifications.data || notifications;
     const pagination = notifications.links ? notifications : null;
+    const [search, setSearch] = useState('');
 
     const handleDelete = (id) => {
         router.delete(route('notifications.destroy', id));
@@ -21,9 +24,21 @@ export default function Index() {
         router.post(route('notifications.send-email', id));
     };
 
+    const filteredData = useMemo(() => {
+        if (!search) return data || [];
+        const q = search.toLowerCase();
+        return (data || []).filter((n) =>
+            (n.title || '').toLowerCase().includes(q) ||
+            (n.message || '').toLowerCase().includes(q) ||
+            (n.recipient || '').toLowerCase().includes(q) ||
+            (n.type || '').toLowerCase().includes(q)
+        );
+    }, [data, search]);
+
     const typeLabels = {
         whatsapp: 'واتساب',
         email: 'بريد إلكتروني',
+        in_app: 'داخل التطبيق',
         both: 'الاثنين',
     };
 
@@ -40,7 +55,7 @@ export default function Index() {
     };
 
     const headers = ['النوع', 'المستلم', 'العنوان', 'الحالة', 'تاريخ الإرسال'];
-    const rows = (data || []).map((n) => ({
+    const rows = filteredData.map((n) => ({
         cells: [
             typeLabels[n.type] || n.type,
             n.recipient || '-',
@@ -59,15 +74,30 @@ export default function Index() {
                     <h1 className="text-2xl font-bold text-gray-800 dark:text-white">الإشعارات</h1>
                     <p className="text-gray-500 dark:text-gray-400">إدارة الإشعارات والتواصل</p>
                 </div>
-                <Link
-                    href={route('notifications.create')}
-                    className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
-                >
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    إضافة إشعار
-                </Link>
+                <div className="flex items-center gap-3">
+                    <Link
+                        href={route('notifications.bulk-form')}
+                        className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
+                    >
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        إرسال جماعي
+                    </Link>
+                    <Link
+                        href={route('notifications.create')}
+                        className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+                    >
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        إضافة إشعار
+                    </Link>
+                </div>
+            </div>
+
+            <div className="mb-4">
+                <SearchInput onSearch={setSearch} placeholder="بحث بالعنوان، الرسالة، المستلم، النوع..." />
             </div>
 
             <div className="overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-800">
@@ -76,9 +106,9 @@ export default function Index() {
                     rows={rows}
                     actions={(row, index) => (
                         <div className="flex items-center gap-2">
-                            {data[index].type !== 'email' && (
+                            {filteredData[index].type !== 'email' && (
                                 <button
-                                    onClick={() => handleSendWhatsApp(data[index].id)}
+                                    onClick={() => handleSendWhatsApp(filteredData[index].id)}
                                     className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
                                     title="إرسال واتساب"
                                 >
@@ -87,9 +117,9 @@ export default function Index() {
                                     </svg>
                                 </button>
                             )}
-                            {data[index].type !== 'whatsapp' && (
+                            {filteredData[index].type !== 'whatsapp' && (
                                 <button
-                                    onClick={() => handleSendEmail(data[index].id)}
+                                    onClick={() => handleSendEmail(filteredData[index].id)}
                                     className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                                     title="إرسال بريد"
                                 >
@@ -98,7 +128,7 @@ export default function Index() {
                                     </svg>
                                 </button>
                             )}
-                            <DeleteButton onDelete={() => handleDelete(data[index].id)} itemName={data[index].title} />
+                            <DeleteButton onDelete={() => handleDelete(filteredData[index].id)} itemName={filteredData[index].title} />
                         </div>
                     )}
                 />

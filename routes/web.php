@@ -73,7 +73,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Payments (admin, teacher)
     Route::get('/payments/{payment}/receipt-pdf', [PaymentController::class, 'receiptPdf'])->name('payments.receipt-pdf');
-    Route::resource('payments', PaymentController::class)->except(['edit', 'update', 'destroy'])->middleware('role:admin,teacher');
+    Route::resource('payments', PaymentController::class)->except(['show'])->middleware('role:admin,teacher');
 
     // Notifications (admin, teacher)
     Route::resource('notifications', NotificationController::class)->only(['index', 'create', 'store', 'destroy'])->middleware('role:admin,teacher');

@@ -4,29 +4,29 @@ import FormSelect from '@/Components/Admin/FormSelect';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Link, useForm, usePage } from '@inertiajs/react';
 
-export default function Create() {
-    const { students, fees } = usePage().props;
+export default function Edit() {
+    const { payment, students, fees } = usePage().props;
     const { errors } = usePage().props;
-    const { data, setData, post, processing } = useForm({
-        student_id: '',
-        fee_id: '',
-        amount: '',
-        payment_date: new Date().toISOString().split('T')[0],
-        payment_method: '',
-        receipt_number: '',
-        notes: '',
+    const { data, setData, put, processing } = useForm({
+        student_id: payment.student_id || '',
+        fee_id: payment.fee_id || '',
+        amount: payment.amount || '',
+        payment_date: payment.payment_date || '',
+        payment_method: payment.payment_method || '',
+        receipt_number: payment.receipt_number || '',
+        notes: payment.notes || '',
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('payments.store'));
+        put(route('payments.update', payment.id));
     };
 
     return (
-        <AdminLayout title="إضافة دفعة">
+        <AdminLayout title="تعديل دفعة">
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">إضافة دفعة جديدة</h1>
-                <p className="text-gray-500 dark:text-gray-400">تسجيل دفعة جديدة</p>
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">تعديل الدفعة</h1>
+                <p className="text-gray-500 dark:text-gray-400">رقم الإيصال: {payment.receipt_number || '-'}</p>
             </div>
 
             <div className="mx-auto max-w-2xl rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
@@ -103,7 +103,7 @@ export default function Create() {
                     </div>
 
                     <div className="flex items-center gap-3 pt-4">
-                        <PrimaryButton disabled={processing}>حفظ</PrimaryButton>
+                        <PrimaryButton disabled={processing}>تحديث</PrimaryButton>
                         <Link
                             href={route('payments.index')}
                             className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"

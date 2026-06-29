@@ -2,19 +2,36 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import Table from '@/Components/Admin/Table';
 import DeleteButton from '@/Components/Admin/DeleteButton';
 import Pagination from '@/Components/Admin/Pagination';
+import SearchInput from '@/Components/Admin/SearchInput';
 import { Link, router, usePage } from '@inertiajs/react';
+import { useState, useMemo } from 'react';
 
 export default function Index() {
     const { students } = usePage().props;
     const data = students.data || students;
     const pagination = students.links ? students : null;
+    const [search, setSearch] = useState('');
 
     const handleDelete = (id) => {
         router.delete(route('students.destroy', id));
     };
 
+    const filteredData = useMemo(() => {
+        if (!search) return data || [];
+        const q = search.toLowerCase();
+        return (data || []).filter((s) =>
+            (s.user?.name || '').toLowerCase().includes(q) ||
+            (s.student_code || '').toLowerCase().includes(q) ||
+            (s.user?.email || '').toLowerCase().includes(q) ||
+            (s.user?.phone || '').toLowerCase().includes(q) ||
+            (s.level?.name || '').toLowerCase().includes(q) ||
+            (s.group?.name || '').toLowerCase().includes(q) ||
+            (s.guardian_name || '').toLowerCase().includes(q)
+        );
+    }, [data, search]);
+
     const headers = ['الكود', 'الاسم', 'البريد', 'الهاتف', 'المستوى', 'المجموعة', 'ولي الأمر'];
-    const rows = (data || []).map((s) => ({
+    const rows = filteredData.map((s) => ({
         cells: [
             s.student_code || '-',
             s.user?.name || '-',
@@ -56,6 +73,10 @@ export default function Index() {
                 </div>
             </div>
 
+            <div className="mb-4">
+                <SearchInput onSearch={setSearch} placeholder="بحث بالاسم، الكود، البريد، الهاتف، المستوى، المجموعة..." />
+            </div>
+
             <div className="overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-800">
                 <Table
                     headers={headers}
@@ -63,7 +84,7 @@ export default function Index() {
                     actions={(row, index) => (
                         <div className="flex items-center gap-3">
                             <Link
-                                href={route('students.edit', data[index].id)}
+                                href={route('students.edit', filteredData[index].id)}
                                 className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
                                 title="تعديل"
                             >
@@ -71,7 +92,7 @@ export default function Index() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </Link>
-                            <DeleteButton onDelete={() => handleDelete(data[index].id)} itemName={data[index].user?.name || data[index].student_code} />
+                            <DeleteButton onDelete={() => handleDelete(filteredData[index].id)} itemName={filteredData[index].user?.name || filteredData[index].student_code} />
                         </div>
                     )}
                 />

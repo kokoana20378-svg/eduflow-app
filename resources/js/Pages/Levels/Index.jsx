@@ -2,19 +2,31 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import Table from '@/Components/Admin/Table';
 import DeleteButton from '@/Components/Admin/DeleteButton';
 import Pagination from '@/Components/Admin/Pagination';
+import SearchInput from '@/Components/Admin/SearchInput';
 import { Link, router, usePage } from '@inertiajs/react';
+import { useState, useMemo } from 'react';
 
 export default function Index() {
     const { levels } = usePage().props;
     const data = levels.data || levels;
     const pagination = levels.links ? levels : null;
+    const [search, setSearch] = useState('');
 
     const handleDelete = (id) => {
         router.delete(route('levels.destroy', id));
     };
 
+    const filteredData = useMemo(() => {
+        if (!search) return data || [];
+        const q = search.toLowerCase();
+        return (data || []).filter((l) =>
+            (l.name || '').toLowerCase().includes(q) ||
+            (l.code || '').toLowerCase().includes(q)
+        );
+    }, [data, search]);
+
     const headers = ['الاسم', 'الكود', 'الترتيب', 'عدد المجموعات', 'عدد المواد'];
-    const rows = (data || []).map((level) => ({
+    const rows = filteredData.map((level) => ({
         cells: [
             level.name,
             level.code,
@@ -42,6 +54,10 @@ export default function Index() {
                 </Link>
             </div>
 
+            <div className="mb-4">
+                <SearchInput onSearch={setSearch} placeholder="بحث بالاسم أو الكود..." />
+            </div>
+
             <div className="overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-800">
                 <Table
                     headers={headers}
@@ -49,7 +65,7 @@ export default function Index() {
                     actions={(row, index) => (
                         <div className="flex items-center gap-3">
                             <Link
-                                href={route('levels.edit', data[index].id)}
+                                href={route('levels.edit', filteredData[index].id)}
                                 className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
                                 title="تعديل"
                             >
@@ -57,7 +73,7 @@ export default function Index() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </Link>
-                            <DeleteButton onDelete={() => handleDelete(data[index].id)} itemName={data[index].name} />
+                            <DeleteButton onDelete={() => handleDelete(filteredData[index].id)} itemName={filteredData[index].name} />
                         </div>
                     )}
                 />
