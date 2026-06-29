@@ -1,4 +1,6 @@
-FROM php:8.3-cli AS base
+FROM php:8.3-cli
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libpng-dev libonig-dev libxml2-dev libpq-dev \
@@ -9,19 +11,16 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-FROM base AS dependencies
-
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+RUN composer install --no-dev --no-autoloader --prefer-dist --no-interaction
 
 COPY package.json package-lock.json ./
 RUN npm ci && npm run build
 
 COPY . .
-RUN composer dump-autoload --optimize --no-dev \
-    && composer install --no-dev --optimize-autoloader
 
-RUN php artisan config:cache \
+RUN composer dump-autoload --optimize --no-dev \
+    && php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache
 
