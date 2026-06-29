@@ -34,12 +34,11 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @routes
-        <script>
-            if (window.Ziggy) {
-                window.Ziggy.url = '{{ config("app.url") }}';
-            }
-        </script>
+        @php
+            $ziggy = new \Tighten\Ziggy\Ziggy(null, config('app.url'));
+            $routeFunction = file_get_contents(base_path('vendor/tightenco/ziggy/dist/route.umd.js'));
+        @endphp
+        <script type="text/javascript">const Ziggy={!! $ziggy->toJson() !!};{!! $routeFunction !!}</script>
         @viteReactRefresh
         @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
         @inertiaHead

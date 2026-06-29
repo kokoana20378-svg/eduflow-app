@@ -1,6 +1,6 @@
-const CACHE_NAME = 'eduflow-v2';
-const STATIC_CACHE = 'eduflow-static-v2';
-const DYNAMIC_CACHE = 'eduflow-dynamic-v2';
+const CACHE_NAME = 'eduflow-v3';
+const STATIC_CACHE = 'eduflow-static-v3';
+const DYNAMIC_CACHE = 'eduflow-dynamic-v3';
 
 const PRECACHE_URLS = [
     '/',
